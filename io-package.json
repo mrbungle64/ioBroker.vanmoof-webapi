@@ -1,0 +1,81 @@
+{
+	"common": {
+		"name": "vanmoof-webapi",
+		"version": "0.0.1",
+		"news": {
+			"0.0.1": {
+				"en": "initial release",
+				"de": "Erstveröffentlichung",
+				"ru": "Начальная версия",
+				"pt": "lançamento inicial",
+				"nl": "Eerste uitgave",
+				"fr": "Première version",
+				"it": "Versione iniziale",
+				"es": "Versión inicial",
+				"pl": "Pierwsze wydanie",
+				"zh-cn": "首次出版"
+			}
+		},
+		"title": "Access VanMoof Web API",
+		"titleLang": {
+			"en": "Access VanMoof Web API",
+			"de": "Greifen Sie auf die VanMoof-Web-API zu",
+			"ru": "Доступ к веб-API VanMoof",
+			"pt": "Acesse a API da Web VanMoof",
+			"nl": "Toegang krijgen tot de VanMoof Web-API",
+			"fr": "Accéder à l'API Web VanMoof",
+			"it": "Accedi all'API Web VanMoof",
+			"es": "Acceda a la API web de VanMoof",
+			"pl": "Uzyskaj dostęp do internetowego interfejsu API VanMoof",
+			"zh-cn": "访问 VanMoof Web API"
+		},
+		"desc": {
+			"en": "vanmoof-webapi",
+			"de": "vanmoof-webapi",
+			"ru": "ванмуф-webapi",
+			"pt": "vanmoof-webapi",
+			"nl": "vanmoof-webapi",
+			"fr": "vanmoof-webapi",
+			"it": "vanmoof-webapi",
+			"es": "vanmoof-webapi",
+			"pl": "vanmoof-webapi",
+			"zh-cn": "vanmoof-webapi"
+		},
+		"authors": ["Sascha Hölzel <mrb1232@posteo.de>"],
+		"keywords": ["vanmoof", "electrified", "pedelec", "bike"],
+		"license": "MIT",
+		"platform": "Javascript/Node.js",
+		"main": "main.js",
+		"icon": "vanmoof-webapi.png",
+		"enabled": true,
+		"extIcon": "https://raw.githubusercontent.com/mrbungle64/ioBroker.vanmoof-webapi/main/admin/vanmoof-webapi.png",
+		"readme": "https://github.com/mrbungle64/ioBroker.vanmoof-webapi/blob/main/README.md",
+		"loglevel": "info",
+		"mode": "schedule",
+		"allowInit": true,
+		"schedule": "0 0 * * *",
+		"type": "health",
+		"compact": true,
+		"connectionType": "cloud",
+		"dataSource": "poll",
+		"adminUI": {
+			"config": "json"
+		},
+		"dependencies": [
+			{
+				"js-controller": ">=3.3.22"
+			}
+		],
+		"globalDependencies": [
+			{
+				"admin": ">=5.1.13"
+			}
+		]
+	},
+	"native": {
+		"email": "",
+		"password": ""
+	},
+	"objects": [],
+	"instanceObjects": []
+}
