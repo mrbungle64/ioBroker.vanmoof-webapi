@@ -39,7 +39,7 @@
 		"loglevel": "info",
 		"mode": "schedule",
 		"allowInit": true,
-		"schedule": "* * * * *",
+		"schedule": "*/15 * * * *",
 		"type": "health",
 		"compact": true,
 		"connectionType": "cloud",

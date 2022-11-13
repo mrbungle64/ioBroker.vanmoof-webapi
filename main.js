@@ -96,6 +96,7 @@ class VanmoofWebapi extends utils.Adapter {
 		} catch (e) {
 			this.log.error(e.toString());
 		}
+		this.stop();
 	}
 
 	/**
