@@ -52,11 +52,13 @@ class VanmoofWebapi extends utils.Adapter {
 				await this.createObjectNotExists(`${channel}.distanceKilometersTotal`, 'Distance kilometers total', 'string', 'value', false, '', 'km');
 				await this.setStateAsync(`${channel}.distanceKilometersTotal`, distanceKilometers, true);
 				await this.createObjectNotExists(`${channel}.currentFirmware`, 'Current firmware version', 'string', 'value', false);
-				await this.setStateAsync(`${channel}.firmware`, bike.smartmoduleCurrentVersion, true);
+				await this.setStateAsync(`${channel}.currentFirmware`, bike.smartmoduleCurrentVersion, true);
+				const stolen = bike.stolen;
 				await this.createObjectNotExists(`${channel}.isStolen`, 'Bike is stolen', 'boolean', 'value', false);
-				await this.setStateAsync(`${channel}.isStolen`, bike.isStolen, true);
+				await this.setStateAsync(`${channel}.isStolen`, stolen.isStolen, true);
+				const modelColor = bike.modelColor;
 				await this.createObjectNotExists(`${channel}.modelColor`, 'Model color', 'string', 'value', false);
-				await this.setStateAsync(`${channel}.modelColor`, bike.modelColor, true);
+				await this.setStateAsync(`${channel}.modelColor`, modelColor.name, true);
 			}
 		} catch (e) {
 			this.log.error(e.toString());
