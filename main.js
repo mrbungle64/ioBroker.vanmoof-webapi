@@ -21,77 +21,38 @@ class VanmoofWebapi extends utils.Adapter {
 	 * Is called when databases are connected and adapter received configuration.
 	 */
 	async onReady() {
-		await this.setObjectNotExistsAsync('account', {
-			type: 'channel',
-			common: {
-				name: 'Account'
-			},
-			native: {}
-		});
-		await this.setObjectNotExistsAsync('account.name', {
-			type: 'state',
-			common: {
-				name: 'Name',
-				type: 'string',
-				role: 'state',
-				read: true,
-				write: false,
-			},
-			native: {},
-		});
-		await this.setObjectNotExistsAsync('account.email', {
-			type: 'state',
-			common: {
-				name: 'Email',
-				type: 'string',
-				role: 'state',
-				read: true,
-				write: false,
-			},
-			native: {},
-		});
-		await this.setObjectNotExistsAsync('bikes', {
-			type: 'channel',
-			common: {
-				name: 'Bikes'
-			},
-			native: {}
-		});
 		if (!this.config.email || !this.config.password) {
 			this.log.error('Please set email and password in the adapter settings');
 			return;
 		}
+		await this.createChannelNotExists('account');
+		await this.createChannelNotExists('bikes');
 		const webAPI = new vanmoof.WebAPI();
 		try {
 			await webAPI.authenticate(this.config.email, this.config.password);
 			const data = (await webAPI.getCustomerData()).data;
-			this.log.info(`Name: ${data.name}`);
-			this.log.info(`Email: ${data.email}`);
+
+			this.log.info(`Processing data for account: '${data.name}'`);
+			await this.createObjectNotExists('account.customerName', 'Customer name', 'string', 'text', false);
+			await this.createObjectNotExists('account.email', 'Customer email', 'string', 'text', false);
+			this.setStateConditional('account.customerName', data.name);
+			this.setStateConditional('account.email', data.email);
 			this.log.info(`Number of bikes: ${data.bikes.length}`);
 			for (let i = 0; i < data.bikes.length; i++) {
 				const bike = data.bikes[i];
-				this.log.info(`Bike #${i + 1} (id: ${bike.id}):`);
-				this.log.info(`name: ${bike.name}`);
-				this.log.info(`frame number: ${bike.frameNumber}`);
-				this.log.info(`mac address: ${bike.macAddress}`);
+				const channel = `bikes.${bike.frameNumber}`;
+				this.log.info(`Processing data for Bike #${i + 1} (id: ${bike.id}):`);
+				await this.createChannelNotExists(`${channel}`);
+				await this.createObjectNotExists(`${channel}.name`, 'Name', 'string', 'text', false);
+				this.setStateConditional(`${channel}.name`, bike.name);
+				await this.createObjectNotExists(`${channel}.macAddress`, 'Mac address', 'string', 'value', false);
+				this.setStateConditional(`${channel}.macAddress`, bike.macAddress);
 				const tripDistance = bike.tripDistance;
 				const distanceKilometers = (tripDistance / 10).toFixed(1);
-				this.log.info(`distance: ${distanceKilometers} km`);
-				this.log.info(`firmware: ${bike.smartmoduleCurrentVersion}`);
-				if (bike.smartmoduleDesiredVersion) {
-					this.log.info(`new firmware available: ${bike.smartmoduleDesiredVersion}`);
-				}
-				this.log.info(`is tracking: ${bike.isTracking}`);
-				const stolen = bike.stolen;
-				this.log.info(`is stolen: ${stolen.isStolen}`);
-				if (stolen.isStolen) {
-					this.log.info(`date stolen: ${stolen.dateStolen}`);
-					this.log.info(`latest location: ${stolen.latestLocation}`);
-				}
-				const modelColor = bike.modelColor;
-				this.log.info(`color: ${modelColor.name}`);
-				this.log.info(`color code (primary): ${modelColor.primary}`);
-				this.log.info(`color code (secondary): ${modelColor.secondary}`);
+				await this.createObjectNotExists(`${channel}.distanceKilometers`, 'Name', 'string', 'value', false, '', 'km');
+				this.setStateConditional(`${channel}.distanceKilometers`, distanceKilometers);
+				await this.createObjectNotExists(`${channel}.firmware`, 'Firmware', 'string', 'value', false);
+				this.setStateConditional(`${channel}.firmware`, bike.smartmoduleCurrentVersion);
 			}
 		} catch (e) {
 			this.log.error(e.toString());
@@ -125,6 +86,42 @@ class VanmoofWebapi extends utils.Adapter {
 			// The state was deleted
 			this.log.debug(`state ${id} deleted`);
 		}
+	}
+
+	async createChannelNotExists(id, name) {
+		await this.setObjectNotExistsAsync(id, {
+			type: 'channel',
+			common: {
+				name: name
+			},
+			native: {}
+		});
+	}
+
+	async createObjectNotExists(id, name, type, role, write, def, unit) {
+		await this.setObjectNotExistsAsync(id, {
+			type: 'state',
+			common: {
+				name: name,
+				type: type,
+				role: role,
+				read: true,
+				write: write,
+				def: def,
+				unit: unit
+			},
+			native: {}
+		});
+	}
+
+	setStateConditional(stateId, value, ack = true) {
+		this.getState(stateId, (err, state) => {
+			if (!err && state) {
+				if (state.val !== value) {
+					this.setState(stateId, value, ack);
+				}
+			}
+		});
 	}
 }
 
