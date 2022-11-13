@@ -57,6 +57,10 @@ class VanmoofWebapi extends utils.Adapter {
 			},
 			native: {}
 		});
+		if (!this.config.email || !this.config.password) {
+			this.log.error('Please set email and password in the adapter settings');
+			return;
+		}
 		const webAPI = new vanmoof.WebAPI();
 		try {
 			await webAPI.authenticate(this.config.email, this.config.password);

@@ -8,8 +8,7 @@
 		},
 		"password": {
 			"type": "password",
-			"label": "password",
-			"newLine": true
+			"label": "password"
 		}
 	}
 }
