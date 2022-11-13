@@ -58,6 +58,8 @@
 			}
 		]
 	},
+	"encryptedNative": ["password"],
+	"protectedNative": ["password"],
 	"native": {
 		"email": "",
 		"password": ""
