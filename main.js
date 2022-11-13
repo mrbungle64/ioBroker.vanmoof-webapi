@@ -35,8 +35,8 @@ class VanmoofWebapi extends utils.Adapter {
 			this.log.info(`Processing data for account: '${data.name}'`);
 			await this.createObjectNotExists('account.customerName', 'Customer name', 'string', 'text', false);
 			await this.createObjectNotExists('account.email', 'Customer email', 'string', 'text', false);
-			await this.setStateConditional('account.customerName', data.name);
-			await this.setStateConditional('account.email', data.email);
+			await this.setStateAsync('account.customerName', data.name);
+			await this.setStateAsync('account.email', data.email);
 			this.log.info(`Number of bikes: ${data.bikes.length}`);
 			for (let i = 0; i < data.bikes.length; i++) {
 				const bike = data.bikes[i];
@@ -44,15 +44,15 @@ class VanmoofWebapi extends utils.Adapter {
 				this.log.info(`Processing data for Bike #${i + 1} (id: ${bike.id}):`);
 				await this.createChannelNotExists(`${channel}`);
 				await this.createObjectNotExists(`${channel}.name`, 'Name', 'string', 'text', false);
-				await this.setStateConditional(`${channel}.name`, bike.name);
+				await this.setStateAsync(`${channel}.name`, bike.name);
 				await this.createObjectNotExists(`${channel}.macAddress`, 'Mac address', 'string', 'value', false);
-				await this.setStateConditional(`${channel}.macAddress`, bike.macAddress);
+				await this.setStateAsync(`${channel}.macAddress`, bike.macAddress);
 				const tripDistance = bike.tripDistance;
 				const distanceKilometers = (tripDistance / 10).toFixed(1);
 				await this.createObjectNotExists(`${channel}.distanceKilometers`, 'Name', 'string', 'value', false, '', 'km');
-				await this.setStateConditional(`${channel}.distanceKilometers`, distanceKilometers);
+				await this.setStateAsync(`${channel}.distanceKilometers`, distanceKilometers);
 				await this.createObjectNotExists(`${channel}.firmware`, 'Firmware', 'string', 'value', false);
-				await this.setStateConditional(`${channel}.firmware`, bike.smartmoduleCurrentVersion);
+				await this.setStateAsync(`${channel}.firmware`, bike.smartmoduleCurrentVersion);
 			}
 		} catch (e) {
 			this.log.error(e.toString());
@@ -112,13 +112,6 @@ class VanmoofWebapi extends utils.Adapter {
 			},
 			native: {}
 		});
-	}
-
-	async setStateConditional(stateId, value) {
-		const state = await this.getStateAsync(stateId);
-		if (state && (state.val !== value)) {
-			await this.setStateAsync(stateId, value);
-		}
 	}
 }
 
