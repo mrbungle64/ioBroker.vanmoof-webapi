@@ -33,8 +33,8 @@ class VanmoofWebapi extends utils.Adapter {
 			const data = (await webAPI.getCustomerData()).data;
 
 			this.log.info(`Processing data for account: '${data.name}'`);
-			await this.createObjectNotExists('account.customerName', 'Customer name', 'string', 'text', false);
-			await this.createObjectNotExists('account.email', 'Customer email', 'string', 'text', false);
+			await this.createObjectNotExists('account.customerName', 'Name', 'string', 'text', false);
+			await this.createObjectNotExists('account.email', 'Email address', 'string', 'text', false);
 			await this.setStateAsync('account.customerName', data.name, true);
 			await this.setStateAsync('account.email', data.email, true);
 			this.log.info(`Number of bikes: ${data.bikes.length}`);
@@ -43,16 +43,20 @@ class VanmoofWebapi extends utils.Adapter {
 				const channel = `bikes.${bike.frameNumber}`;
 				this.log.info(`Processing data for Bike #${i + 1} (id: ${bike.id}):`);
 				await this.createChannelNotExists(`${channel}`);
-				await this.createObjectNotExists(`${channel}.name`, 'Name', 'string', 'text', false);
+				await this.createObjectNotExists(`${channel}.name`, 'Name of the bike', 'string', 'text', false);
 				await this.setStateAsync(`${channel}.name`, bike.name, true);
 				await this.createObjectNotExists(`${channel}.macAddress`, 'Mac address', 'string', 'value', false);
 				await this.setStateAsync(`${channel}.macAddress`, bike.macAddress, true);
 				const tripDistance = bike.tripDistance;
 				const distanceKilometers = (tripDistance / 10).toFixed(1);
-				await this.createObjectNotExists(`${channel}.distanceKilometers`, 'Name', 'string', 'value', false, '', 'km');
-				await this.setStateAsync(`${channel}.distanceKilometers`, distanceKilometers, true);
-				await this.createObjectNotExists(`${channel}.firmware`, 'Firmware', 'string', 'value', false);
+				await this.createObjectNotExists(`${channel}.distanceKilometersTotal`, 'Distance kilometers total', 'string', 'value', false, '', 'km');
+				await this.setStateAsync(`${channel}.distanceKilometersTotal`, distanceKilometers, true);
+				await this.createObjectNotExists(`${channel}.currentFirmware`, 'Current firmware version', 'string', 'value', false);
 				await this.setStateAsync(`${channel}.firmware`, bike.smartmoduleCurrentVersion, true);
+				await this.createObjectNotExists(`${channel}.isStolen`, 'Bike is stolen', 'boolean', 'value', false);
+				await this.setStateAsync(`${channel}.isStolen`, bike.isStolen, true);
+				await this.createObjectNotExists(`${channel}.modelColor`, 'Model color', 'string', 'value', false);
+				await this.setStateAsync(`${channel}.modelColor`, bike.modelColor, true);
 			}
 		} catch (e) {
 			this.log.error(e.toString());
