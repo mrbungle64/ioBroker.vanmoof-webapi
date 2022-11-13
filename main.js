@@ -116,7 +116,7 @@ class VanmoofWebapi extends utils.Adapter {
 
 	async setStateConditional(stateId, value) {
 		const state = await this.getStateAsync(stateId);
-		if (state.val !== value) {
+		if (state && (state.val !== value)) {
 			await this.setStateAsync(stateId, value);
 		}
 	}

@@ -24,7 +24,7 @@
 			}
 		],
 		"no-var": "error",
-		"no-trailing-spaces": "error",
+		"no-trailing-spaces": "off",
 		"prefer-const": "error",
 		"quotes": [
 			"error",
