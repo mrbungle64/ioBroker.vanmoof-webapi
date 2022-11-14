@@ -2,6 +2,7 @@
 
 const utils = require('@iobroker/adapter-core');
 const vanmoof = require('vanmoof-webapi.js');
+const helper = require('./lib/helper');
 
 class VanmoofWebapi extends utils.Adapter {
 	/**
@@ -62,6 +63,8 @@ class VanmoofWebapi extends utils.Adapter {
 			await this.createChannelNotExists(`${channel}.tripData.${d}`, name);
 			await this.createObjectNotExists(`${channel}.tripData.${d}.distance`,
 				'Distance kilometers', 'mixed', 'value', false, 0, 'km');
+			await this.createObjectNotExists(`${channel}.tripData.${d}.date`,
+				'Date', 'mixed', 'value.date', false, helper.getPreviousDay(d * -1).toLocaleDateString());
 			if (d > 0) {
 				await this.createObjectNotExists(`${channel}.tripData.${d}.mileage`,
 					'Mileage (at the end of the day)', 'mixed', 'value', false, 0, 'km');
@@ -76,7 +79,7 @@ class VanmoofWebapi extends utils.Adapter {
 		await this.createObjectNotExists(`${channel}.macAddress`,
 			'MAC address', 'string', 'value', false, bike.macAddress);
 		await this.createObjectNotExists(`${channel}.mileageTotal`,
-			'Mileage total', 'mixed', 'value', false, 0, 'km');
+			'Mileage total (distance kilometers total)', 'mixed', 'value', false, 0, 'km');
 		await this.createObjectNotExists(`${channel}.firmware.current`,
 			'Current firmware version', 'mixed', 'value', false, bike.smartmoduleCurrentVersion);
 		await this.createObjectNotExists(`${channel}.firmware.available`,
