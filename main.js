@@ -34,12 +34,11 @@ class VanmoofWebapi extends utils.Adapter {
 
 			this.log.info(`Processing data for account: '${data.name}'`);
 			await this.createObjectNotExists('account.customerName',
-				'Name', 'string', 'text', false);
+				'Name of the customer', 'string', 'text', false);
 			await this.createObjectNotExists('account.numberOfBikes',
 				'Number of bikes registered', 'number', 'value', false);
 			await this.setStateAsync('account.customerName', data.name, true);
-			const numberOfBikes = data.bikes.length + 1;
-			await this.setStateAsync('account.numberOfBikes', numberOfBikes, true);
+			await this.setStateAsync('account.numberOfBikes', data.bikes.length, true);
 			this.log.info(`Number of bikes: ${data.bikes.length}`);
 			for (let i = 0; i < data.bikes.length; i++) {
 				const bike = data.bikes[i];
@@ -63,13 +62,13 @@ class VanmoofWebapi extends utils.Adapter {
 		await this.createObjectNotExists(`${channel}.name`,
 			'Name of the bike', 'string', 'text', false, '');
 		await this.createObjectNotExists(`${channel}.macAddress`,
-			'Mac address', 'string', 'value', false, '');
+			'MAC address', 'string', 'value', false, '');
 		await this.createObjectNotExists(`${channel}.distanceKilometersTotal`,
 			'Distance kilometers total', 'mixed', 'value', false, 0, 'km');
 		await this.createObjectNotExists(`${channel}.firmware.current`,
 			'Current firmware version', 'mixed', 'value', false, '');
 		await this.createObjectNotExists(`${channel}.firmware.available`,
-			'Current firmware version', 'mixed', 'value', false, '');
+			'Firmware version when update available', 'mixed', 'value', false, '');
 
 		await this.createObjectNotExists(`${channel}.stolen.isStolen`,
 			'Is the bike stolen?', 'boolean', 'value', false, false);
@@ -78,8 +77,8 @@ class VanmoofWebapi extends utils.Adapter {
 		await this.createObjectNotExists(`${channel}.stolen.latestLocation`,
 			'Latest location (when the bike was stolen)', 'mixed', 'location', false, '');
 
-		await this.createObjectNotExists(`${channel}.details.modelName`,
-			'Model name', 'string', 'value', false, '');
+		await this.createObjectNotExists(`${channel}.details.modelDesignation`,
+			'Model designation', 'string', 'value', false, '');
 		await this.createObjectNotExists(`${channel}.details.bleProfile`,
 			'BLE profile', 'string', 'value', false, '');
 		await this.createObjectNotExists(`${channel}.details.controller`,
