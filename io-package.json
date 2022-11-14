@@ -18,14 +18,14 @@
 		},
 		"title": "Access VanMoof Web API",
 		"titleLang": {
-			"en": "Access VanMoof Web API",
-			"de": "VanMoof-Web-API",
-			"ru": "Access VanMoof Web API"
+			"en": "VanMoof Web API",
+			"de": "VanMoof Web API",
+			"ru": "VanMoof Web API"
 		},
 		"desc": {
-			"en": "vanmoof-webapi",
-			"de": "vanmoof-webapi",
-			"ru": "ванмуф-webapi"
+			"en": "Access VanMoof Web API",
+			"de": "Auf die VanMoof Web API zugreifen",
+			"ru": "VanMoof Web API"
 		},
 		"authors": ["Sascha Hölzel <mrb1232@posteo.de>"],
 		"keywords": ["vanmoof", "electrified", "pedelec", "bike"],
@@ -39,7 +39,7 @@
 		"loglevel": "info",
 		"mode": "schedule",
 		"allowInit": true,
-		"schedule": "*/15 * * * *",
+		"schedule": "*/30 * * * *",
 		"type": "health",
 		"compact": true,
 		"connectionType": "cloud",
