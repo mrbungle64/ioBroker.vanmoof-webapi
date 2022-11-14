@@ -32,7 +32,7 @@
 		"license": "MIT",
 		"platform": "Javascript/Node.js",
 		"main": "main.js",
-		"icon": "admin/vanmoof-s3.png",
+		"icon": "admin/vanmoof.png",
 		"enabled": true,
 		"extIcon": "https://raw.githubusercontent.com/mrbungle64/ioBroker.vanmoof-webapi/main/admin/vanmoof-webapi.png",
 		"readme": "https://github.com/mrbungle64/ioBroker.vanmoof-webapi/blob/main/README.md",
