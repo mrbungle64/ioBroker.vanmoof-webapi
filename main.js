@@ -25,8 +25,8 @@ class VanmoofWebapi extends utils.Adapter {
 			this.log.error('Please set email and password in the adapter settings');
 			return;
 		}
-		await this.createChannelNotExists('account');
-		await this.createChannelNotExists('bikes');
+		await this.createChannelNotExists('account', 'Account data');
+		await this.createChannelNotExists('bikes', 'Bike data');
 		const webAPI = new vanmoof.WebAPI();
 		try {
 			await webAPI.authenticate(this.config.email, this.config.password);
@@ -54,11 +54,18 @@ class VanmoofWebapi extends utils.Adapter {
 	}
 
 	async createObjectsNotExistsForBike(channel, bike) {
-		await this.createChannelNotExists(`${channel}`);
-		await this.createChannelNotExists(`${channel}.firmware`);
-		await this.createChannelNotExists(`${channel}.stolen`);
-		await this.createChannelNotExists(`${channel}.details`);
-		await this.createChannelNotExists(`${channel}.details.color`);
+		await this.createChannelNotExists(`${channel}`, `Data for Bike with frameNumber ${bike.frameNumber}`);
+		await this.createChannelNotExists(`${channel}.firmware`, 'Firmware information');
+		await this.createChannelNotExists(`${channel}.tripData`, 'Trip data');
+		for (let d = 0; d <= 7; d++) {
+			const name = (d > 0) ? `Day ${d}` : 'Today';
+			await this.createChannelNotExists(`${channel}.tripData.${d}`, name);
+			await this.createObjectNotExists(`${channel}.tripData.${d}.distanceKilometers`,
+				'Distance kilometers', 'mixed', 'value', false, 0, 'km');
+		}
+		await this.createChannelNotExists(`${channel}.stolen`, 'Information if the bike is stolen');
+		await this.createChannelNotExists(`${channel}.details`, 'Model detail information');
+		await this.createChannelNotExists(`${channel}.details.color`, 'Model color information');
 
 		await this.createObjectNotExists(`${channel}.name`,
 			'Name of the bike', 'string', 'text', false, '');
@@ -69,7 +76,7 @@ class VanmoofWebapi extends utils.Adapter {
 		await this.createObjectNotExists(`${channel}.firmware.current`,
 			'Current firmware version', 'mixed', 'value', false, bike.smartmoduleCurrentVersion);
 		await this.createObjectNotExists(`${channel}.firmware.available`,
-			'New firmware version (if update available)', 'mixed', 'value', false, bike.smartmoduleDesiredVersion);
+			'New firmware version (if available)', 'mixed', 'value', false, bike.smartmoduleDesiredVersion);
 
 		await this.createObjectNotExists(`${channel}.stolen.isStolen`,
 			'Is the bike stolen?', 'boolean', 'value', false, bike.stolen.isStolen);
