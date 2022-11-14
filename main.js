@@ -60,8 +60,12 @@ class VanmoofWebapi extends utils.Adapter {
 		for (let d = 0; d <= 7; d++) {
 			const name = (d > 0) ? `Day ${d}` : 'Today';
 			await this.createChannelNotExists(`${channel}.tripData.${d}`, name);
-			await this.createObjectNotExists(`${channel}.tripData.${d}.distanceKilometers`,
+			await this.createObjectNotExists(`${channel}.tripData.${d}.distance`,
 				'Distance kilometers', 'mixed', 'value', false, 0, 'km');
+			if (d > 0) {
+				await this.createObjectNotExists(`${channel}.tripData.${d}.mileage`,
+					'Mileage (at the end of the day)', 'mixed', 'value', false, 0, 'km');
+			}
 		}
 		await this.createChannelNotExists(`${channel}.stolen`, 'Information if the bike is stolen');
 		await this.createChannelNotExists(`${channel}.details`, 'Model detail information');
@@ -71,8 +75,8 @@ class VanmoofWebapi extends utils.Adapter {
 			'Name of the bike', 'string', 'text', false, '');
 		await this.createObjectNotExists(`${channel}.macAddress`,
 			'MAC address', 'string', 'value', false, bike.macAddress);
-		await this.createObjectNotExists(`${channel}.distanceKilometersTotal`,
-			'Distance kilometers total', 'mixed', 'value', false, 0, 'km');
+		await this.createObjectNotExists(`${channel}.mileageTotal`,
+			'Mileage total', 'mixed', 'value', false, 0, 'km');
 		await this.createObjectNotExists(`${channel}.firmware.current`,
 			'Current firmware version', 'mixed', 'value', false, bike.smartmoduleCurrentVersion);
 		await this.createObjectNotExists(`${channel}.firmware.available`,
