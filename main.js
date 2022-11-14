@@ -33,10 +33,13 @@ class VanmoofWebapi extends utils.Adapter {
 			const data = (await webAPI.getCustomerData()).data;
 
 			this.log.info(`Processing data for account: '${data.name}'`);
-			await this.createObjectNotExists('account.customerName', 'Name', 'string', 'text', false);
-			await this.createObjectNotExists('account.email', 'Email address', 'string', 'text', false);
+			await this.createObjectNotExists('account.customerName',
+				'Name', 'string', 'text', false);
+			await this.createObjectNotExists('account.numberOfBikes',
+				'Number of bikes registered', 'number', 'value', false);
 			await this.setStateAsync('account.customerName', data.name, true);
-			await this.setStateAsync('account.email', data.email, true);
+			const numberOfBikes = data.bikes.length + 1;
+			await this.setStateAsync('account.numberOfBikes', numberOfBikes, true);
 			this.log.info(`Number of bikes: ${data.bikes.length}`);
 			for (let i = 0; i < data.bikes.length; i++) {
 				const bike = data.bikes[i];
@@ -54,8 +57,9 @@ class VanmoofWebapi extends utils.Adapter {
 	async createObjectsNotExistsForBike(channel) {
 		await this.createChannelNotExists(`${channel}`);
 		await this.createChannelNotExists(`${channel}.firmware`);
-		await this.createChannelNotExists(`${channel}.color`);
 		await this.createChannelNotExists(`${channel}.stolen`);
+		await this.createChannelNotExists(`${channel}.details`);
+		await this.createChannelNotExists(`${channel}.details.color`);
 		await this.createObjectNotExists(`${channel}.name`,
 			'Name of the bike', 'string', 'text', false, '');
 		await this.createObjectNotExists(`${channel}.macAddress`,
@@ -66,13 +70,25 @@ class VanmoofWebapi extends utils.Adapter {
 			'Current firmware version', 'mixed', 'value', false, '');
 		await this.createObjectNotExists(`${channel}.firmware.available`,
 			'Current firmware version', 'mixed', 'value', false, '');
+
 		await this.createObjectNotExists(`${channel}.stolen.isStolen`,
 			'Is the bike stolen?', 'boolean', 'value', false, false);
-		await this.createObjectNotExists(`${channel}.color.name`,
+		await this.createObjectNotExists(`${channel}.stolen.isTracking`,
+			'Is the bike currently tracked?', 'boolean', 'value', false, false);
+		await this.createObjectNotExists(`${channel}.stolen.latestLocation`,
+			'Latest location (when the bike was stolen)', 'mixed', 'location', false, '');
+
+		await this.createObjectNotExists(`${channel}.details.modelName`,
+			'Model name', 'string', 'value', false, '');
+		await this.createObjectNotExists(`${channel}.details.bleProfile`,
+			'BLE profile', 'string', 'value', false, '');
+		await this.createObjectNotExists(`${channel}.details.controller`,
+			'Controller', 'string', 'value', false, '');
+		await this.createObjectNotExists(`${channel}.details.color.name`,
 			'Model color', 'string', 'value', false, '');
-		await this.createObjectNotExists(`${channel}.color.primary`,
+		await this.createObjectNotExists(`${channel}.details.color.primary`,
 			'Color code (primary)', 'string', 'value', false, '');
-		await this.createObjectNotExists(`${channel}.color.secondary`,
+		await this.createObjectNotExists(`${channel}.details.color.secondary`,
 			'Color code (secondary)', 'string', 'value', false, '');
 	}
 
@@ -86,10 +102,16 @@ class VanmoofWebapi extends utils.Adapter {
 		await this.setStateAsync(`${channel}.firmware.available`, bike.smartmoduleDesiredVersion, true);
 		const stolen = bike.stolen;
 		await this.setStateAsync(`${channel}.stolen.isStolen`, stolen.isStolen, true);
+		await this.setStateAsync(`${channel}.stolen.isTracking`, bike.isTracking, true);
+		await this.setStateAsync(`${channel}.stolen.latestLocation`, stolen.latestLocation, true);
+
+		await this.setStateAsync(`${channel}.details.modelName`, bike.modelName, true);
+		await this.setStateAsync(`${channel}.details.bleProfile`, bike.bleProfile, true);
+		await this.setStateAsync(`${channel}.details.controller`, bike.controller, true);
 		const modelColor = bike.modelColor;
-		await this.setStateAsync(`${channel}.color`, modelColor.name, true);
-		await this.setStateAsync(`${channel}.color.primary`, modelColor.primary, true);
-		await this.setStateAsync(`${channel}.color.secondary`, modelColor.secondary, true);
+		await this.setStateAsync(`${channel}.details.color.name`, modelColor.name, true);
+		await this.setStateAsync(`${channel}.details.color.primary`, modelColor.primary, true);
+		await this.setStateAsync(`${channel}.details.color.secondary`, modelColor.secondary, true);
 	}
 
 	/**
