@@ -44,7 +44,7 @@ class VanmoofWebapi extends utils.Adapter {
 				const bike = data.bikes[i];
 				const channel = `bikes.${bike.frameNumber}`;
 				this.log.info(`Processing data for Bike #${i + 1} (id: ${bike.id}):`);
-				await this.createObjectsNotExistsForBike(channel);
+				await this.createObjectsNotExistsForBike(channel, bike);
 				await this.setStatesForBike(channel, bike);
 			}
 		} catch (e) {
