@@ -53,64 +53,56 @@ class VanmoofWebapi extends utils.Adapter {
 		this.stop();
 	}
 
-	async createObjectsNotExistsForBike(channel) {
+	async createObjectsNotExistsForBike(channel, bike) {
 		await this.createChannelNotExists(`${channel}`);
 		await this.createChannelNotExists(`${channel}.firmware`);
 		await this.createChannelNotExists(`${channel}.stolen`);
 		await this.createChannelNotExists(`${channel}.details`);
 		await this.createChannelNotExists(`${channel}.details.color`);
+
 		await this.createObjectNotExists(`${channel}.name`,
 			'Name of the bike', 'string', 'text', false, '');
 		await this.createObjectNotExists(`${channel}.macAddress`,
-			'MAC address', 'string', 'value', false, '');
+			'MAC address', 'string', 'value', false, bike.macAddress);
 		await this.createObjectNotExists(`${channel}.distanceKilometersTotal`,
 			'Distance kilometers total', 'mixed', 'value', false, 0, 'km');
 		await this.createObjectNotExists(`${channel}.firmware.current`,
-			'Current firmware version', 'mixed', 'value', false, '');
+			'Current firmware version', 'mixed', 'value', false, bike.smartmoduleCurrentVersion);
 		await this.createObjectNotExists(`${channel}.firmware.available`,
-			'Firmware version when update available', 'mixed', 'value', false, '');
+			'New firmware version (if update available)', 'mixed', 'value', false, bike.smartmoduleDesiredVersion);
 
 		await this.createObjectNotExists(`${channel}.stolen.isStolen`,
-			'Is the bike stolen?', 'boolean', 'value', false, false);
+			'Is the bike stolen?', 'boolean', 'value', false, bike.stolen.isStolen);
 		await this.createObjectNotExists(`${channel}.stolen.isTracking`,
-			'Is the bike currently tracked?', 'boolean', 'value', false, false);
+			'Is the bike currently tracked?', 'boolean', 'value', false, bike.isTracking);
 		await this.createObjectNotExists(`${channel}.stolen.latestLocation`,
-			'Latest location (when the bike was stolen)', 'mixed', 'location', false, '');
+			'Latest location (when the bike was stolen)', 'mixed', 'location', false, bike.stolen.latestLocation);
 
 		await this.createObjectNotExists(`${channel}.details.modelDesignation`,
-			'Model designation', 'string', 'value', false, '');
+			'Model designation', 'string', 'value', false, bike.modelName);
 		await this.createObjectNotExists(`${channel}.details.bleProfile`,
-			'BLE profile', 'string', 'value', false, '');
+			'BLE profile', 'string', 'value', false, bike.bleProfile);
 		await this.createObjectNotExists(`${channel}.details.controller`,
-			'Controller', 'string', 'value', false, '');
+			'Controller', 'string', 'value', false, bike.controller);
 		await this.createObjectNotExists(`${channel}.details.color.name`,
-			'Model color', 'string', 'value', false, '');
+			'Model color', 'string', 'value', false, bike.modelColor.name);
 		await this.createObjectNotExists(`${channel}.details.color.primary`,
-			'Color code (primary)', 'string', 'value', false, '');
+			'Color code (primary)', 'string', 'value', false, bike.modelColor.primary);
 		await this.createObjectNotExists(`${channel}.details.color.secondary`,
-			'Color code (secondary)', 'string', 'value', false, '');
+			'Color code (secondary)', 'string', 'value', false, bike.modelColor.secondary);
 	}
 
 	async setStatesForBike(channel, bike) {
 		await this.setStateAsync(`${channel}.name`, bike.name, true);
-		await this.setStateAsync(`${channel}.macAddress`, bike.macAddress, true);
 		const tripDistance = bike.tripDistance;
 		const distanceKilometers = (tripDistance / 10).toFixed(1);
 		await this.setStateAsync(`${channel}.distanceKilometersTotal`, distanceKilometers, true);
 		await this.setStateAsync(`${channel}.firmware.current`, bike.smartmoduleCurrentVersion, true);
 		await this.setStateAsync(`${channel}.firmware.available`, bike.smartmoduleDesiredVersion, true);
-		const stolen = bike.stolen;
-		await this.setStateAsync(`${channel}.stolen.isStolen`, stolen.isStolen, true);
+		await this.setStateAsync(`${channel}.stolen.isStolen`, bike.stolen.isStolen, true);
 		await this.setStateAsync(`${channel}.stolen.isTracking`, bike.isTracking, true);
-		await this.setStateAsync(`${channel}.stolen.latestLocation`, stolen.latestLocation, true);
+		await this.setStateAsync(`${channel}.stolen.latestLocation`, bike.stolen.latestLocation, true);
 
-		await this.setStateAsync(`${channel}.details.modelName`, bike.modelName, true);
-		await this.setStateAsync(`${channel}.details.bleProfile`, bike.bleProfile, true);
-		await this.setStateAsync(`${channel}.details.controller`, bike.controller, true);
-		const modelColor = bike.modelColor;
-		await this.setStateAsync(`${channel}.details.color.name`, modelColor.name, true);
-		await this.setStateAsync(`${channel}.details.color.primary`, modelColor.primary, true);
-		await this.setStateAsync(`${channel}.details.color.secondary`, modelColor.secondary, true);
 	}
 
 	/**
