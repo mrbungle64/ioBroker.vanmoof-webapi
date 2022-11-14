@@ -64,7 +64,7 @@ class VanmoofWebapi extends utils.Adapter {
 			await this.createObjectNotExists(`${channel}.tripData.${d}.distance`,
 				'Distance kilometers', 'mixed', 'value', false, 0, 'km');
 			await this.createObjectNotExists(`${channel}.tripData.${d}.date`,
-				'Date', 'mixed', 'value.date', false, helper.getPreviousDay(d * -1).toLocaleDateString());
+				'Date', 'mixed', 'value.date', false, helper.getPreviousDay(d).toLocaleDateString());
 			if (d > 0) {
 				await this.createObjectNotExists(`${channel}.tripData.${d}.mileage`,
 					'Mileage (at the end of the day)', 'mixed', 'value', false, 0, 'km');
@@ -110,7 +110,7 @@ class VanmoofWebapi extends utils.Adapter {
 		await this.setStateAsync(`${channel}.name`, bike.name, true);
 		const tripDistance = bike.tripDistance;
 		const distanceKilometers = (tripDistance / 10).toFixed(1);
-		await this.setStateAsync(`${channel}.distanceKilometersTotal`, distanceKilometers, true);
+		await this.setStateAsync(`${channel}.mileageTotal`, distanceKilometers, true);
 		await this.setStateAsync(`${channel}.firmware.current`, bike.smartmoduleCurrentVersion, true);
 		await this.setStateAsync(`${channel}.firmware.available`, bike.smartmoduleDesiredVersion, true);
 		await this.setStateAsync(`${channel}.stolen.isStolen`, bike.stolen.isStolen, true);
