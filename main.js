@@ -120,12 +120,12 @@ class VanmoofWebapi extends utils.Adapter {
 	async updateChannelNames(channel) {
 		for (let d = 1; d <= 7; d++) {
 			const folderDate = new Date();
-			folderDate.setDate(folderDate.getDate() + d);
+			folderDate.setDate(folderDate.getDate() - d);
 			const name = folderDate.toLocaleDateString('de');
-			const spotAreaObj = await this.getObjectAsync(`${channel}.tripData.${d}`);
-			if (spotAreaObj && spotAreaObj.common && (spotAreaObj.common.name !== name)) {
-				spotAreaObj.common.name = name;
-				await this.extendObjectAsync(`${channel}.tripData.${d}`, spotAreaObj);
+			const folderObj = await this.getObjectAsync(`${channel}.tripData.${d}`);
+			if (folderObj && folderObj.common && (folderObj.common.name !== name)) {
+				folderObj.common.name = name;
+				await this.extendObjectAsync(`${channel}.tripData.${d}`, folderObj);
 			}
 		}
 	}
