@@ -47,6 +47,7 @@ class VanmoofWebapi extends utils.Adapter {
 				this.log.info(`Processing data for Bike #${i + 1} (id: ${bike.id}):`);
 				await this.createObjectsNotExistsForBike(channel, bike);
 				await this.setStatesForBike(channel, bike);
+				await this.updateChannelNames(channel);
 			}
 		} catch (e) {
 			this.log.error(e.toString());
@@ -64,11 +65,9 @@ class VanmoofWebapi extends utils.Adapter {
 			await this.createObjectNotExists(`${channel}.tripData.${d}.distance`,
 				'Distance kilometers', 'mixed', 'value', false, 0, 'km');
 			await this.createObjectNotExists(`${channel}.tripData.${d}.date`,
-				'Date', 'mixed', 'value.date', false, helper.getPreviousDay(d).toLocaleDateString());
-			if (d > 0) {
-				await this.createObjectNotExists(`${channel}.tripData.${d}.mileage`,
-					'Mileage (at the end of the day)', 'mixed', 'value', false, 0, 'km');
-			}
+				'Date', 'mixed', 'value.date', false, helper.getPreviousDay(d).toLocaleDateString('de'));
+			await this.createObjectNotExists(`${channel}.tripData.${d}.mileage`,
+				'Mileage (at the end of the day)', 'mixed', 'value', false, 0, 'km');
 		}
 		await this.createChannelNotExists(`${channel}.stolen`, 'Information if the bike is stolen');
 		await this.createChannelNotExists(`${channel}.details`, 'Model detail information');
@@ -116,7 +115,19 @@ class VanmoofWebapi extends utils.Adapter {
 		await this.setStateAsync(`${channel}.stolen.isStolen`, bike.stolen.isStolen, true);
 		await this.setStateAsync(`${channel}.stolen.isTracking`, bike.isTracking, true);
 		await this.setStateAsync(`${channel}.stolen.latestLocation`, bike.stolen.latestLocation, true);
+	}
 
+	async updateChannelNames(channel) {
+		for (let d = 1; d <= 7; d++) {
+			const folderDate = new Date();
+			folderDate.setDate(folderDate.getDate() + d);
+			const name = folderDate.toLocaleDateString('de');
+			const spotAreaObj = await this.getObjectAsync(`${channel}.tripData.${d}`);
+			if (spotAreaObj && spotAreaObj.common && (spotAreaObj.common.name !== name)) {
+				spotAreaObj.common.name = name;
+				await this.extendObjectAsync(`${channel}.tripData.${d}`, spotAreaObj);
+			}
+		}
 	}
 
 	/**
