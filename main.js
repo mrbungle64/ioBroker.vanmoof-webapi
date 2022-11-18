@@ -110,17 +110,45 @@ class VanmoofWebapi extends utils.Adapter {
 		const tripDistance = bike.tripDistance;
 		const distanceKilometers = (tripDistance / 10).toFixed(1);
 		await this.setStateAsync(`${channel}.mileageTotal`, distanceKilometers, true);
-		await this.setStateAsync(`${channel}.tripData.0.mileage`, distanceKilometers, true);
-		const state = await this.getStateAsync(`${channel}.tripData.1.mileage`);
-		if (state && state.val) {
-			const distance = Number((Number(distanceKilometers) - Number(state.val)).toFixed(1));
-			await this.setStateAsync(`${channel}.tripData.0.distance`, distance, true);
-		}
+		await this.updateTripData(channel, distanceKilometers);
 		await this.setStateAsync(`${channel}.firmware.current`, bike.smartmoduleCurrentVersion, true);
 		await this.setStateAsync(`${channel}.firmware.available`, bike.smartmoduleDesiredVersion, true);
 		await this.setStateAsync(`${channel}.stolen.isStolen`, bike.stolen.isStolen, true);
 		await this.setStateAsync(`${channel}.stolen.isTracking`, bike.isTracking, true);
 		await this.setStateAsync(`${channel}.stolen.latestLocation`, bike.stolen.latestLocation, true);
+	}
+
+	async updateTripData(channel, distanceKilometers) {
+		await this.setStateAsync(`${channel}.tripData.0.mileage`, distanceKilometers, true);
+		const dateState = await this.getStateAsync(`${channel}.tripData.1.date`);
+		if ((new Date().toLocaleDateString('de')) !== dateState.val) {
+			await this.handleChangeOfDay(channel);
+		}
+		const mileageState = await this.getStateAsync(`${channel}.tripData.1.mileage`);
+		if (mileageState && mileageState.val) {
+			const distance = Number((Number(distanceKilometers) - Number(mileageState.val)).toFixed(1));
+			await this.setStateAsync(`${channel}.tripData.0.distance`, distance, true);
+		}
+	}
+
+	async handleChangeOfDay(channel) {
+		for (let d = 7; d >= 1; d--) {
+			const dayNumber = d - 1;
+			const mileageState = await this.getStateAsync(`${channel}.tripData.${dayNumber}.mileage`);
+			if (mileageState && mileageState.val) {
+				await this.setStateAsync(`${channel}.tripData.${d}.mileage`, mileageState.val, true);
+			}
+			const distanceState = await this.getStateAsync(`${channel}.tripData.${dayNumber}.distance`);
+			if (distanceState && distanceState.val) {
+				await this.setStateAsync(`${channel}.tripData.${d}.distance`, distanceState.val, true);
+			}
+			const dateState = await this.getStateAsync(`${channel}.tripData.${dayNumber}.date`);
+			if (dateState && dateState.val) {
+				await this.setStateAsync(`${channel}.tripData.${d}.date`, dateState.val, true);
+			}
+		}
+		await this.setStateAsync(`${channel}.tripData.0.date`, new Date().toLocaleDateString('de'), true);
+		await this.setStateAsync(`${channel}.tripData.0.distance`, 0.0, true);
 	}
 
 	async updateChannelNames(channel) {
