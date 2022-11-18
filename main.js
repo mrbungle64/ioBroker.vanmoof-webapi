@@ -110,6 +110,12 @@ class VanmoofWebapi extends utils.Adapter {
 		const tripDistance = bike.tripDistance;
 		const distanceKilometers = (tripDistance / 10).toFixed(1);
 		await this.setStateAsync(`${channel}.mileageTotal`, distanceKilometers, true);
+		await this.setStateAsync(`${channel}.tripData.0.mileage`, distanceKilometers, true);
+		const state = await this.getStateAsync(`${channel}.tripData.1.mileage`);
+		if (state && state.val) {
+			const distance = Number((Number(distanceKilometers) - Number(state.val)).toFixed(1));
+			await this.setStateAsync(`${channel}.tripData.0.distance`, distance, true);
+		}
 		await this.setStateAsync(`${channel}.firmware.current`, bike.smartmoduleCurrentVersion, true);
 		await this.setStateAsync(`${channel}.firmware.available`, bike.smartmoduleDesiredVersion, true);
 		await this.setStateAsync(`${channel}.stolen.isStolen`, bike.stolen.isStolen, true);
