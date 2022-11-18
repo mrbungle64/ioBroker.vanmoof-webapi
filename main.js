@@ -121,7 +121,7 @@ class VanmoofWebapi extends utils.Adapter {
 	async updateTripData(channel, distanceKilometers) {
 		await this.setStateAsync(`${channel}.tripData.0.mileage`, distanceKilometers, true);
 		const dateState = await this.getStateAsync(`${channel}.tripData.0.date`);
-		if ((new Date().toLocaleDateString('de')) !== dateState.val) {
+		if ((new Date().toLocaleDateString('de')) !== dateState.val.toString()) {
 			await this.handleChangeOfDay(channel);
 		}
 		const mileageState = await this.getStateAsync(`${channel}.tripData.1.mileage`);

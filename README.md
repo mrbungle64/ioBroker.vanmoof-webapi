@@ -7,7 +7,7 @@ This is an ioBroker adapter for accessing the VanMoof Web API (read-only)
 # Before you install
 
 * This adapter provides access to your VanMoof account information only
-* You cannot connect to any bike (via Bluetooth)
+* You cannot connect directly to your bike (via Bluetooth)
 
 ## Changelog
 
