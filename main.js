@@ -60,14 +60,16 @@ class VanmoofWebapi extends utils.Adapter {
 		await this.createChannelNotExists(`${channel}.firmware`, 'Firmware information');
 		await this.createChannelNotExists(`${channel}.tripData`, 'Trip data');
 		for (let d = 0; d <= 7; d++) {
-			const name = (d > 0) ? `Day ${d}` : 'Today';
+			let name = (d > 0) ? `Day ${d}` : 'Today';
 			await this.createChannelNotExists(`${channel}.tripData.${d}`, name);
+			name = (d > 0) ? 'Distance kilometers (total)' : 'Distance kilometers (so far)';
 			await this.createObjectNotExists(`${channel}.tripData.${d}.distance`,
-				'Distance kilometers', 'mixed', 'value', false, 0, 'km');
+				name, 'mixed', 'value', false, 0, 'km');
 			await this.createObjectNotExists(`${channel}.tripData.${d}.date`,
 				'Date', 'mixed', 'value.date', false, helper.getPreviousDay(d).toLocaleDateString('de'));
+			name = (d > 0) ? 'Mileage (at the end of the day)' : 'Mileage';
 			await this.createObjectNotExists(`${channel}.tripData.${d}.mileage`,
-				'Mileage (at the end of the day)', 'mixed', 'value', false, 0, 'km');
+				name, 'mixed', 'value', false, 0, 'km');
 		}
 		await this.createChannelNotExists(`${channel}.stolen`, 'Information if the bike is stolen');
 		await this.createChannelNotExists(`${channel}.details`, 'Model detail information');
