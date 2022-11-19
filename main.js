@@ -31,7 +31,7 @@ class VanmoofWebapi extends utils.Adapter {
 		const webAPI = new vanmoof.WebAPI();
 		try {
 			await webAPI.authenticate(this.config.email, this.config.password);
-			const data = (await webAPI.getCustomerData()).data;
+			const data = (await webAPI.getCustomerData(true)).data;
 
 			this.log.info(`Processing data for account: '${data.name}'`);
 			await this.createObjectNotExists('account.customerName',
@@ -40,9 +40,9 @@ class VanmoofWebapi extends utils.Adapter {
 				'Number of bikes registered', 'number', 'value', false);
 			await this.setStateAsync('account.customerName', data.name, true);
 			await this.setStateAsync('account.numberOfBikes', data.bikes.length, true);
-			this.log.info(`Number of bikes: ${data.bikes.length}`);
-			for (let i = 0; i < data.bikes.length; i++) {
-				const bike = data.bikes[i];
+			this.log.info(`Number of bikes: ${data.bikeDetails.length}`);
+			for (let i = 0; i < data.bikeDetails.length; i++) {
+				const bike = data.bikeDetails[i];
 				const channel = `bikes.${bike.frameNumber}`;
 				this.log.info(`Processing data for Bike #${i + 1} (id: ${bike.id}):`);
 				await this.createObjectsNotExistsForBike(channel, bike);
@@ -62,7 +62,7 @@ class VanmoofWebapi extends utils.Adapter {
 		for (let d = 0; d <= 7; d++) {
 			let name = (d > 0) ? `Day ${d}` : 'Today';
 			await this.createChannelNotExists(`${channel}.tripData.${d}`, name);
-			name = (d > 0) ? 'Distance kilometers (total)' : 'Distance kilometers (so far)';
+			name = (d > 0) ? 'Distance covered on this day' : 'Distance kilometers (so far)';
 			await this.createObjectNotExists(`${channel}.tripData.${d}.distance`,
 				name, 'mixed', 'value', false, 0, 'km');
 			await this.createObjectNotExists(`${channel}.tripData.${d}.date`,
@@ -74,6 +74,7 @@ class VanmoofWebapi extends utils.Adapter {
 		await this.createChannelNotExists(`${channel}.stolen`, 'Information if the bike is stolen');
 		await this.createChannelNotExists(`${channel}.details`, 'Model detail information');
 		await this.createChannelNotExists(`${channel}.details.color`, 'Model color information');
+		await this.createChannelNotExists(`${channel}.details.key`, 'Encryption key and passcode');
 
 		await this.createObjectNotExists(`${channel}.name`,
 			'Name of the bike', 'string', 'text', false, '');
@@ -94,17 +95,37 @@ class VanmoofWebapi extends utils.Adapter {
 			'Latest location (when the bike was stolen)', 'mixed', 'location', false, bike.stolen.latestLocation);
 
 		await this.createObjectNotExists(`${channel}.details.modelDesignation`,
-			'Model designation', 'string', 'value', false, bike.modelName);
+			'Model designation', 'string', 'text', false, bike.modelName);
 		await this.createObjectNotExists(`${channel}.details.bleProfile`,
-			'BLE profile', 'string', 'value', false, bike.bleProfile);
+			'BLE profile', 'string', 'text', false, bike.bleProfile);
 		await this.createObjectNotExists(`${channel}.details.controller`,
-			'Controller', 'string', 'value', false, bike.controller);
+			'Controller', 'string', 'text', false, bike.controller);
+		await this.createObjectNotExists(`${channel}.details.customerRole`,
+			'Customer role', 'string', 'text', false, bike.customerRole);
+		await this.createObjectNotExists(`${channel}.details.gears`,
+			'Gears', 'string', 'text', false, bike.modelDetails['Gears']);
+		await this.createObjectNotExists(`${channel}.details.motor`,
+			'Motor', 'string', 'text', false, bike.modelDetails['Motor']);
+		await this.createObjectNotExists(`${channel}.details.topSpeed`,
+			'Top Speed', 'string', 'text', false, bike.modelDetails['Top Speed']);
+		await this.createObjectNotExists(`${channel}.details.range`,
+			'Range', 'string', 'text', false, bike.modelDetails['Range']);
+		await this.createObjectNotExists(`${channel}.details.edition`,
+			'Edition', 'string', 'text', false, bike.modelDetails['Edition']);
 		await this.createObjectNotExists(`${channel}.details.color.name`,
-			'Model color', 'string', 'value', false, bike.modelColor.name);
+			'Model color', 'string', 'text', false, bike.modelColor.name);
 		await this.createObjectNotExists(`${channel}.details.color.primary`,
-			'Color code (primary)', 'string', 'value', false, bike.modelColor.primary);
+			'Color code (primary)', 'string', 'text', false, bike.modelColor.primary);
 		await this.createObjectNotExists(`${channel}.details.color.secondary`,
-			'Color code (secondary)', 'string', 'value', false, bike.modelColor.secondary);
+			'Color code (secondary)', 'string', 'text', false, bike.modelColor.secondary);
+		await this.createObjectNotExists(`${channel}.details.key.encryptionKey`,
+			'Encryption key', 'string', 'value', false, bike.key.encryptionKey);
+		await this.createObjectNotExists(`${channel}.details.key.passcode`,
+			'Passcode', 'string', 'value', false, bike.key.passcode);
+		await this.createObjectNotExists(`${channel}.details.key.userKeyId`,
+			'User key id', 'number', 'value', false, bike.key.userKeyId);
+		await this.createObjectNotExists(`${channel}.details.thumbnail`,
+			'Thumbnail (link)', 'string', 'value', false, bike.links.thumbnail);
 	}
 
 	async setStatesForBike(channel, bike) {
