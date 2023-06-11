@@ -136,8 +136,8 @@ class VanmoofWebapi extends utils.Adapter {
 		await this.createChannelNotExists(`${channel}.maintenance.lastCheckBrakes`, 'Last check of the brakes');
 		await this.createObjectNotExists(`${channel}.maintenance.lastCheckBrakes.kilometerFrontWheel`,
 			'Last check of the front wheel brakes (kilometer)', 'number', 'value', true, 0);
-		await this.createObjectNotExists(`${channel}.maintenance.lastCheckBrakes.kilometerFrontWheelDrivenSince, 'km'`,
-			'Kilometer driven since last check of the front wheel brakes', 'number', 'value', false, 0);
+		await this.createObjectNotExists(`${channel}.maintenance.lastCheckBrakes.kilometerFrontWheelDrivenSince`,
+			'Kilometer driven since last check of the front wheel brakes', 'number', 'value', false, 0, 'km');
 		await this.createObjectNotExists(`${channel}.maintenance.lastCheckBrakes.kilometerRearWheel`,
 			'Last check of the rear wheel brakes (kilometer)', 'number', 'value', true, 0, 'km');
 		await this.createObjectNotExists(`${channel}.maintenance.lastCheckBrakes.kilometerRearWheelDrivenSince`,
@@ -169,12 +169,12 @@ class VanmoofWebapi extends utils.Adapter {
 			await this.setStateAsync(`${channel}.tripData.0.distance`, distance, true);
 		}
 		// maintenance data
-		const kilometerDrivenSince = await this.getStateAsync(`${channel}.maintenance.lastInspection.kilometerDrivenSince`);
-		const kilometerFrontWheelDrivenSince = await this.getStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerFrontWheelDrivenSince`);
-		const kilometerRearWheelDrivenSince = await this.getStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerRearWheelDrivenSince`);
-		const distanceLastInspection = Number(Number(kilometerDrivenSince) - Number(distanceKilometers)).toFixed(1);
-		const distanceLastCheckedFrontWheel = Number(Number(kilometerFrontWheelDrivenSince) - Number(distanceKilometers)).toFixed(1);
-		const distanceLastCheckedRearWheel = Number(Number(kilometerRearWheelDrivenSince) - Number(distanceKilometers)).toFixed(1);
+		const kilometerDrivenSince = await this.getStateAsync(`${channel}.maintenance.lastInspection.kilometer`);
+		const kilometerFrontWheelDrivenSince = await this.getStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerFrontWheel`);
+		const kilometerRearWheelDrivenSince = await this.getStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerRearWheel`);
+		const distanceLastInspection = Number(kilometerDrivenSince) - Number(distanceKilometers);
+		const distanceLastCheckedFrontWheel = Number(kilometerFrontWheelDrivenSince) - Number(distanceKilometers);
+		const distanceLastCheckedRearWheel = Number(kilometerRearWheelDrivenSince) - Number(distanceKilometers);
 		await this.setStateAsync(`${channel}.maintenance.lastInspection.kilometerDrivenSince`, distanceLastInspection, true);
 		await this.setStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerFrontWheelDrivenSince`, distanceLastCheckedFrontWheel, true);
 		await this.setStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerRearWheelDrivenSince`, distanceLastCheckedRearWheel, true);
