@@ -169,15 +169,15 @@ class VanmoofWebapi extends utils.Adapter {
 			await this.setStateAsync(`${channel}.tripData.0.distance`, distance, true);
 		}
 		// maintenance data
-		const kilometerDrivenSince = await this.getStateAsync(`${channel}.maintenance.lastInspection.kilometer`);
-		const kilometerFrontWheelDrivenSince = await this.getStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerFrontWheel`);
-		const kilometerRearWheelDrivenSince = await this.getStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerRearWheel`);
-		const distanceLastInspection = Number(kilometerDrivenSince) - Number(distanceKilometers);
-		const distanceLastCheckedFrontWheel = Number(kilometerFrontWheelDrivenSince) - Number(distanceKilometers);
-		const distanceLastCheckedRearWheel = Number(kilometerRearWheelDrivenSince) - Number(distanceKilometers);
-		await this.setStateAsync(`${channel}.maintenance.lastInspection.kilometerDrivenSince`, distanceLastInspection, true);
-		await this.setStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerFrontWheelDrivenSince`, distanceLastCheckedFrontWheel, true);
-		await this.setStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerRearWheelDrivenSince`, distanceLastCheckedRearWheel, true);
+		const lastInspection = await this.getStateAsync(`${channel}.maintenance.lastInspection.kilometer`);
+		const lastCheckedFrontWheel = await this.getStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerFrontWheel`);
+		const lastCheckedRearWheel = await this.getStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerRearWheel`);
+		const drivenSince = Number(distanceKilometers) - Number(lastInspection);
+		const frontWheelDrivenSince = Number(distanceKilometers) - Number(lastCheckedFrontWheel);
+		const rearWheelDrivenSince = Number(distanceKilometers) - Number(lastCheckedRearWheel);
+		await this.setStateAsync(`${channel}.maintenance.lastInspection.kilometerDrivenSince`, drivenSince, true);
+		await this.setStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerFrontWheelDrivenSince`, frontWheelDrivenSince, true);
+		await this.setStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerRearWheelDrivenSince`, rearWheelDrivenSince, true);
 	}
 
 	async handleChangeOfDay(channel) {
