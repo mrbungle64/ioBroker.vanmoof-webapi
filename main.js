@@ -150,6 +150,7 @@ class VanmoofWebapi extends utils.Adapter {
 		const distanceKilometers = (tripDistance / 10).toFixed(1);
 		await this.setStateAsync(`${channel}.mileageTotal`, distanceKilometers, true);
 		await this.updateTripData(channel, distanceKilometers);
+		await this.updateMaintenanceData(channel, distanceKilometers);
 		await this.setStateAsync(`${channel}.firmware.current`, bike.smartmoduleCurrentVersion, true);
 		await this.setStateAsync(`${channel}.firmware.available`, bike.smartmoduleDesiredVersion, true);
 		await this.setStateAsync(`${channel}.stolen.isStolen`, bike.stolen.isStolen, true);
@@ -168,16 +169,24 @@ class VanmoofWebapi extends utils.Adapter {
 			const distance = Number((Number(distanceKilometers) - Number(mileageState.val)).toFixed(1));
 			await this.setStateAsync(`${channel}.tripData.0.distance`, distance, true);
 		}
-		// maintenance data
-		const lastInspection = await this.getStateAsync(`${channel}.maintenance.lastInspection.kilometer`);
-		const lastCheckedFrontWheel = await this.getStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerFrontWheel`);
-		const lastCheckedRearWheel = await this.getStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerRearWheel`);
-		const drivenSince = Number(distanceKilometers) - Number(lastInspection);
-		const frontWheelDrivenSince = Number(distanceKilometers) - Number(lastCheckedFrontWheel);
-		const rearWheelDrivenSince = Number(distanceKilometers) - Number(lastCheckedRearWheel);
-		await this.setStateAsync(`${channel}.maintenance.lastInspection.kilometerDrivenSince`, drivenSince, true);
-		await this.setStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerFrontWheelDrivenSince`, frontWheelDrivenSince, true);
-		await this.setStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerRearWheelDrivenSince`, rearWheelDrivenSince, true);
+	}
+
+	async updateMaintenanceData(channel, distanceKilometers) {
+		const lastInspectionState = await this.getStateAsync(`${channel}.maintenance.lastInspection.kilometer`);
+		const lastCheckedFrontWheelState = await this.getStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerFrontWheel`);
+		const lastCheckedRearWheelState = await this.getStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerRearWheel`);
+		if (lastInspectionState && lastInspectionState.val) {
+			const drivenSince = Number(distanceKilometers) - Number(lastInspectionState.val);
+			await this.setStateAsync(`${channel}.maintenance.lastInspection.kilometerDrivenSince`, drivenSince, true);
+		}
+		if (lastCheckedFrontWheelState && lastCheckedFrontWheelState.val) {
+			const frontWheelDrivenSince = Number(distanceKilometers) - Number(lastCheckedFrontWheelState.val);
+			await this.setStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerFrontWheelDrivenSince`, frontWheelDrivenSince, true);
+		}
+		if (lastCheckedRearWheelState && lastCheckedRearWheelState.val) {
+			const rearWheelDrivenSince = Number(distanceKilometers) - Number(lastCheckedRearWheelState.val);
+			await this.setStateAsync(`${channel}.maintenance.lastCheckBrakes.kilometerRearWheelDrivenSince`, rearWheelDrivenSince, true);
+		}
 	}
 
 	async handleChangeOfDay(channel) {
