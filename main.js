@@ -142,6 +142,14 @@ class VanmoofWebapi extends utils.Adapter {
 			'Last check of the rear wheel brakes (kilometer)', 'number', 'value', true, 0, 'km');
 		await this.createObjectNotExists(`${channel}.maintenance.lastCheckBrakes.kilometerRearWheelDrivenSince`,
 			'Kilometer driven since last check of the rear wheel brakes', 'number', 'value', false, 0, 'km');
+
+		await this.createChannelNotExists(`${channel}.key`, 'Encryption key');
+		await this.createObjectNotExists(`${channel}.key.encryptionKey`,
+			'Encryption key', 'string', 'value', false, bike.key.encryptionKey);
+		await this.createObjectNotExists(`${channel}.key.passcode`,
+			'Passcode', 'string', 'value', false, bike.key.passcode);
+		await this.createObjectNotExists(`${channel}.key.userKeyId`,
+			'User key id', 'number', 'value', false, bike.key.userKeyId);
 	}
 
 	async setStatesForBike(channel, bike) {
