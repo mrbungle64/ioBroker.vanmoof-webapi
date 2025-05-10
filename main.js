@@ -74,7 +74,6 @@ class VanmoofWebapi extends utils.Adapter {
 		await this.createChannelNotExists(`${channel}.stolen`, 'Information if the bike is stolen');
 		await this.createChannelNotExists(`${channel}.details`, 'Model detail information');
 		await this.createChannelNotExists(`${channel}.details.color`, 'Model color information');
-		await this.createChannelNotExists(`${channel}.details.key`, 'Encryption key and passcode');
 
 		await this.createObjectNotExists(`${channel}.name`,
 			'Name of the bike', 'string', 'text', false, '');
@@ -118,12 +117,16 @@ class VanmoofWebapi extends utils.Adapter {
 			'Color code (primary)', 'string', 'text', false, bike.modelColor.primary);
 		await this.createObjectNotExists(`${channel}.details.color.secondary`,
 			'Color code (secondary)', 'string', 'text', false, bike.modelColor.secondary);
-		await this.createObjectNotExists(`${channel}.details.key.encryptionKey`,
-			'Encryption key', 'string', 'value', false, bike.key.encryptionKey);
-		await this.createObjectNotExists(`${channel}.details.key.passcode`,
-			'Passcode', 'string', 'value', false, bike.key.passcode);
-		await this.createObjectNotExists(`${channel}.details.key.userKeyId`,
-			'User key id', 'number', 'value', false, bike.key.userKeyId);
+
+		if (bike.key !== null) {
+			await this.createChannelNotExists(`${channel}.details.key`, 'Encryption key and passcode');
+			await this.createObjectNotExists(`${channel}.details.key.encryptionKey`,
+				'Encryption key', 'string', 'value', false, bike.key.encryptionKey);
+			await this.createObjectNotExists(`${channel}.details.key.passcode`,
+				'Passcode', 'string', 'value', false, bike.key.passcode);
+			await this.createObjectNotExists(`${channel}.details.key.userKeyId`,
+				'User key id', 'number', 'value', false, bike.key.userKeyId);
+		}
 		await this.createObjectNotExists(`${channel}.details.thumbnail`,
 			'Thumbnail (link)', 'string', 'value', false, bike.links.thumbnail);
 
@@ -142,14 +145,6 @@ class VanmoofWebapi extends utils.Adapter {
 			'Last check of the rear wheel brakes (kilometer)', 'number', 'value', true, 0, 'km');
 		await this.createObjectNotExists(`${channel}.maintenance.lastCheckBrakes.kilometerRearWheelDrivenSince`,
 			'Kilometer driven since last check of the rear wheel brakes', 'number', 'value', false, 0, 'km');
-
-		await this.createChannelNotExists(`${channel}.key`, 'Encryption key');
-		await this.createObjectNotExists(`${channel}.key.encryptionKey`,
-			'Encryption key', 'string', 'value', false, bike.key.encryptionKey);
-		await this.createObjectNotExists(`${channel}.key.passcode`,
-			'Passcode', 'string', 'value', false, bike.key.passcode);
-		await this.createObjectNotExists(`${channel}.key.userKeyId`,
-			'User key id', 'number', 'value', false, bike.key.userKeyId);
 	}
 
 	async setStatesForBike(channel, bike) {
