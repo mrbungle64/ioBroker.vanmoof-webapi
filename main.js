@@ -28,10 +28,10 @@ class VanmoofWebapi extends utils.Adapter {
 		}
 		await this.createChannelNotExists('account', 'Account data');
 		await this.createChannelNotExists('bikes', 'Bike data');
-		const webAPI = new vanmoof.WebAPI();
+		const webAPI = new vanmoof.WebAPI(this.config.email, this.config.password);
 		try {
-			await webAPI.authenticate(this.config.email, this.config.password);
-			const data = (await webAPI.getCustomerData(true)).data;
+			await webAPI.initialize();
+			const data = webAPI.getCustomerData().data;
 
 			this.log.info(`Processing data for account: '${data.name}'`);
 			await this.createObjectNotExists('account.customerName',
@@ -46,7 +46,8 @@ class VanmoofWebapi extends utils.Adapter {
 				const channel = `bikes.${bike.frameNumber}`;
 				this.log.info(`Processing data for Bike #${i + 1} (id: ${bike.id}):`);
 				await this.createObjectsNotExistsForBike(channel, bike);
-				await this.setStatesForBike(channel, bike);
+				const tripDistance = await webAPI.getOdometer(bike.id);
+				await this.setStatesForBike(channel, bike, tripDistance);
 				await this.updateChannelNames(channel);
 			}
 		} catch (e) {
@@ -147,10 +148,9 @@ class VanmoofWebapi extends utils.Adapter {
 			'Kilometer driven since last check of the rear wheel brakes', 'number', 'value', false, 0, 'km');
 	}
 
-	async setStatesForBike(channel, bike) {
+	async setStatesForBike(channel, bike, tripDistance) {
 		await this.setStateAsync(`${channel}.name`, bike.name, true);
-		const tripDistance = bike.tripDistance;
-		const distanceKilometers = (tripDistance / 10).toFixed(1);
+		const distanceKilometers = tripDistance.toFixed(1);
 		await this.setStateAsync(`${channel}.mileageTotal`, distanceKilometers, true);
 		await this.updateTripData(channel, distanceKilometers);
 		await this.updateMaintenanceData(channel, distanceKilometers);
