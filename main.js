@@ -102,16 +102,18 @@ class VanmoofWebapi extends utils.Adapter {
 			'Controller', 'string', 'text', false, bike.controller);
 		await this.createObjectNotExists(`${channel}.details.customerRole`,
 			'Customer role', 'string', 'text', false, bike.customerRole);
-		await this.createObjectNotExists(`${channel}.details.gears`,
-			'Gears', 'string', 'text', false, bike.modelDetails['Gears']);
-		await this.createObjectNotExists(`${channel}.details.motor`,
-			'Motor', 'string', 'text', false, bike.modelDetails['Motor']);
-		await this.createObjectNotExists(`${channel}.details.topSpeed`,
-			'Top Speed', 'string', 'text', false, bike.modelDetails['Top Speed']);
-		await this.createObjectNotExists(`${channel}.details.range`,
-			'Range', 'string', 'text', false, bike.modelDetails['Range']);
-		await this.createObjectNotExists(`${channel}.details.edition`,
-			'Edition', 'string', 'text', false, bike.modelDetails['Edition']);
+		if (bike.modelDetails) {
+			await this.createObjectNotExists(`${channel}.details.gears`,
+				'Gears', 'string', 'text', false, bike.modelDetails['Gears']);
+			await this.createObjectNotExists(`${channel}.details.motor`,
+				'Motor', 'string', 'text', false, bike.modelDetails['Motor']);
+			await this.createObjectNotExists(`${channel}.details.topSpeed`,
+				'Top Speed', 'string', 'text', false, bike.modelDetails['Top Speed']);
+			await this.createObjectNotExists(`${channel}.details.range`,
+				'Range', 'string', 'text', false, bike.modelDetails['Range']);
+			await this.createObjectNotExists(`${channel}.details.edition`,
+				'Edition', 'string', 'text', false, bike.modelDetails['Edition']);
+		}
 		await this.createObjectNotExists(`${channel}.details.color.name`,
 			'Model color', 'string', 'text', false, bike.modelColor.name);
 		await this.createObjectNotExists(`${channel}.details.color.primary`,
